@@ -1,0 +1,17 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#object1 {
+    width: 30px;
+    height: 30px;
+    object-position: center bottom;
+    /* String value */
+}
+ .el-header {
+     background-color: #B3C0D1;
+     color: #333;
+     line-height: 60px;
+ }
+
