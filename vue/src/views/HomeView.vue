@@ -70,8 +70,9 @@
         <el-main>
 
           <div style="padding: 10px">
-            <el-input style="width: 450px" suffix-icon="el-icon-search" placeholder="please input name"></el-input>
-            <el-button style="margin-left: 5px" type="primary">search</el-button>
+            <el-input style="width: 450px" suffix-icon="el-icon-search" placeholder="please input name"
+                      v-model="name"></el-input>
+            <el-button style="margin-left: 5px" type="primary" @click="load">search</el-button>
           </div>
 
           <div>
@@ -84,9 +85,11 @@
 
 
           <el-table :data="tableData">
-            <el-table-column prop="date" label="Date" width="140">
+            <el-table-column prop="id" label="ID" width="80">
             </el-table-column>
-            <el-table-column prop="name" label="Name" width="120">
+            <el-table-column prop="name" label="Name" width="140">
+            </el-table-column>
+            <el-table-column prop="phone" label="Phone" width="200">
             </el-table-column>
             <el-table-column prop="address" label="Address">
             </el-table-column>
@@ -98,12 +101,18 @@
           </el-table>
         </el-main>
 
-        <el-pagination
-                :page-size="50"
-                :pager-count="8"
-                layout="prev, pager, next"
-                :total="1000">
-        </el-pagination>
+        <div style="padding: 10px 0">
+          <el-pagination
+
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+                  :page-size="this.pageSize"
+                  layout="total, sizes, prev, pager, next,jumper"
+                  :page-sizes="[2,5,10,20]"
+                  :total="total">
+          </el-pagination>
+        </div>
+
 
       </el-container>
     </el-container>
@@ -114,15 +123,44 @@
 <script>
 
 export default {
-  name: 'HomeView',
+  name: 'Home',
     data(){
-        const item = {
-            date: '2016-05-02',
-            name: 'Tom',
-            address: 'No. 189, Grove St, Los Angeles'
-        };
+
         return {
-            tableData: Array(20).fill(item)
+            tableData: [],
+            total: 0,
+            pageNum: 1,
+            pageSize: 2,
+            name : ""
+        }
+    },
+
+    created(){
+        this.load()
+    },
+
+    methods: {
+
+        load(){
+            //请求分页查询数据
+            fetch("http://localhost:9090/user/page?pageNum=" + this.pageNum + "&pageSize="
+                + this.pageSize + "&name=" + this.name).then(res => res.json()).then(res => {
+                console.log(res)
+                this.tableData = res.data
+                this.total = res.total
+            })
+        },
+
+        handleSizeChange(pageSize) {
+            console.log(`${pageSize} items per page`);
+            this.pageSize = pageSize
+            this.load()
+        },
+
+        handleCurrentChange(pageNum) {
+            console.log(`current page: ${pageNum}`);
+            this.pageNum = pageNum
+            this.load()
         }
     }
 }
